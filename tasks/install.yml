@@ -1,0 +1,64 @@
+---
+
+- name: Check install version
+  shell: /usr/local/bin/govpn-server -version | awk '{ print $3 }'
+  register: govpn__version_install_raw
+  always_run: yes
+  changed_when: False
+
+- name: set govpn__version_install
+  set_fact:
+    govpn__version_install: "{{ govpn__version_install_raw.stdout }}"
+
+#- debug: msg="{{ govpn__version_install }}"
+
+#- debug: msg="{{ govpn__version }}"
+
+- name: install required packages
+  apt:
+    name: '{{ item }}'
+    state: 'present'
+    install_recommends: False
+  with_flattened:
+    - 'git'
+    - 'golang-go'
+  when: govpn__version != govpn__version_install
+
+- name: git clone
+  git:
+    repo: "git://git.cypherpunks.ru/govpn.git"
+    dest: "/tmp/govpn"
+    version: "{{ govpn__version }}"
+  when: govpn__version != govpn__version_install
+
+- name: make all
+  make:
+    chdir: /tmp/govpn
+    target: all
+  when: govpn__version != govpn__version_install
+
+- name: Copy files
+  copy:
+    remote_src: True
+    src: "/tmp/govpn/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0755
+    group: root
+    owner: root
+  with_flattened:
+    - 'govpn-client'
+    - 'govpn-server'
+    - 'govpn-verifier'
+  when: govpn__version != govpn__version_install
+
+- name: Remove old files
+  file:
+    path: "/tmp/govpn/{{item}}"
+    state: absent
+  with_flattened:
+    - 'govpn-client'
+    - 'govpn-server'
+    - 'govpn-verifier'
+  when: govpn__version != govpn__version_install
+
+## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2
