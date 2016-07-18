@@ -10,10 +10,6 @@
   set_fact:
     govpn__version_install: "{{ govpn__version_install_raw.stdout }}"
 
-#- debug: msg="{{ govpn__version_install }}"
-
-#- debug: msg="{{ govpn__version }}"
-
 - name: install required packages
   apt:
     name: '{{ item }}'
@@ -26,7 +22,7 @@
 
 - name: git clone
   git:
-    repo: "git://git.cypherpunks.ru/govpn.git"
+    repo: "{{ govpn__git }}"
     dest: "/tmp/govpn"
     version: "{{ govpn__version }}"
   when: govpn__version != govpn__version_install

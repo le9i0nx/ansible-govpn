@@ -1,3 +1,10 @@
 ---
 
+#1.сгенерить ключ
+# govpn-verifier -key /tmp/00
+#2. настраиваем запуск сервере
+#3. настраиваем клиентов
+
+
+
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2

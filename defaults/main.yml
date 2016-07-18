@@ -1,5 +1,70 @@
 ---
 
+govpn__start_client: True
+
+govpn__start_server: False
+
 govpn__version: "5.10"
+
+#govpn__git: "git://git.cypherpunks.ru/govpn.git"
+govpn__git: "https://github.com/stargrave/govpn.git"
+
+# .. envvar:: govpn__networks
+#
+# List of networks which are created by the ``le9i0nx.govpn`` role.
+govpn__networks: []
+
+# .. envvar:: govpn__host_address_ip
+#
+# Include public IP addresse.
+govpn__host_address_ip: '{{ ansible_default_ipv4 }}'
+
+govpn__interface_default: 'tap-star'
+
+govpn__default_network:
+  name: 'default'
+  server: 'default-server'
+  groups: [ 'govpn' ]
+  interface: '{{ govpn__interface_default }}'
+  port: '1194'
+
+govpn__ifupdown_interface:
+  - iface: '{{ govpn__interface_default }}'
+    type: 'interface'
+    inet: 'static'
+    auto: True
+    addresses: '{{ govpn__host_addr }}'
+
+# Enable execution of ``le9i0nx.govpn`` role dependencies. This variable can be
+# used in playbooks to disable hardcoded dependencies during transition to
+# playbook-based ones.
+govnp__dependencies_ferm: False
+
+# .. envvar:: govpn__ferm_dependent_rules
+#
+# Configuration for ``iptables`` firewall managed by ``ferm``.
+govpn__ferm_dependent_rules:
+
+  - type: 'accept'
+    dport: [ '1194' ]
+    protocol: [ 'tcp' ]
+    role: 'le9i0nx.govpn'
+    name: 'tcp'
+    accept_any: True
+
+  - type: 'accept'
+    dport: [ '1194' ]
+    protocol: [ 'udp' ]
+    role: 'le9i0nx.govpn'
+    name: 'udp'
+    accept_any: True
+
+govnp__dependencies_apt_preferences: False
+govpn__apt_preferences__dependent_list:
+
+  - package: 'golang*'
+    by_role: 'le9i0nx.govpn'
+    priority: '500'
+    pin: 'release a=jessie-backports'
 
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2

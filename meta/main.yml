@@ -1,0 +1,44 @@
+---
+
+dependencies:
+
+    - role: debops.secret
+
+    - role: debops.ferm
+      tags:
+        - 'depend::ferm'
+        - 'depend::ferm:govpn'
+        - 'depend-of::govpn'
+        - 'type::dependency'
+      ferm_dependent_rules:
+        - '{{ govpn__ferm_dependent_rules }}'
+      when: govnp__dependencies_ferm | bool
+
+    - role: debops.apt_preferences
+      tags:
+        - 'depend::apt_preferences'
+        - 'depend::apt_preferences:govpn'
+        - 'depend-of::govpn'
+        - 'type::dependency'
+      apt_preferences__group_list:
+        - '{{ govpn__apt_preferences__dependent_list }}'
+      when: govnp__dependencies_apt_preferences | bool
+
+galaxy_info:
+  author: 'Aleksej Gavrilov'
+  description: 'Configure syncthing packages'
+  license: 'GPLv3'
+  min_ansible_version: '2.1.0'
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+  - name: Ubuntu
+    versions:
+    - xenial
+  categories:
+    - networking
+    - tinc
+    - vpn
+
+## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2
