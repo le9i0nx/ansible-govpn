@@ -9,11 +9,6 @@ govpn__version: "5.10"
 #govpn__git: "git://git.cypherpunks.ru/govpn.git"
 govpn__git: "https://github.com/stargrave/govpn.git"
 
-# .. envvar:: govpn__networks
-#
-# List of networks which are created by the ``le9i0nx.govpn`` role.
-govpn__networks: []
-
 # .. envvar:: govpn__host_address_ip
 #
 # Include public IP addresse.
@@ -21,7 +16,10 @@ govpn__host_address_ip: '{{ ansible_default_ipv4 }}'
 
 govpn__interface_default: 'tap-star'
 
-govpn__default_network:
+# .. envvar:: govpn__network
+#
+# List of network which are created by the ``le9i0nx.govpn`` role.
+govpn__network:
   name: 'default'
   server: 'default-server'
   groups: [ 'govpn' ]
