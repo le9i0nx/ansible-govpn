@@ -2,37 +2,40 @@
 
 - name: Generate /tmp/govpn_key
   shell: openssl rand -base64 48 > /tmp/govpn_key
+  when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: Generate govpn key
   shell: govpn-verifier -key /tmp/govpn_key
   register: govpn__key_raw
+  when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: rm /tmp/govpn_key
   file:
     path: /tmp/govpn_key
     state: absent
+  when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: set govpn__key_(server|client)
   set_fact:
     govpn__key_server: "{{ govpn__key_raw.stdout_lines[0] }}"
     govpn__key_client: "{{ govpn__key_raw.stdout_lines[1] }}"
+  when: (govpn__start_client|d() and govpn__start_client | bool )
 
-- name: generate
+#2. настраиваем запуск на сервере
+- name: generate conf.d
   template:
-    src: "etc/govpn/conf.d/{{ item.type | default('default') }}.conf.j2"
-    dest: '/etc/govpn/conf.d/{{ item.name }}.conf'
+    src: "etc/govpn/net/conf.d/client.yaml.j2"
+    dest: '/etc/govpn/{{ govpn__network.name }}/conf.d/peers.yaml'
     owner: 'root'
     group: 'root'
     mode: '0644'
-  with_items:
-    - '{{ rspamd__conf_d }}'
-  delegate_to: "{{ groups['director'][0] }}"
+  delegate_to: "{{ govpn__network.server }}"
+  when: (govpn__start_client|d() and govpn__start_client | bool )
 
-#2. настраиваем запуск сервере
 #3. настраиваем клиентов
 
-- debug: msg={{ govpn__key_raw }}
-- debug: msg={{ govpn__key_server }}
-- debug: msg={{ govpn__key_client }}
+#- debug: msg={{ govpn__key_raw }}
+#- debug: msg={{ govpn__key_server }}
+#- debug: msg={{ govpn__key_client }}
 
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2

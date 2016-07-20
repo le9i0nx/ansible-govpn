@@ -16,6 +16,13 @@ govpn__host_address_ip: '{{ ansible_default_ipv4 }}'
 
 govpn__interface_default: 'tap-star'
 
+# .. envvar:: govpn__inventory_hostname
+#
+# Name of this node in Ansible inventory. This variable is used during the file
+# upload/download to have consistent mapping between directories and Ansible
+# inventory.
+govpn__inventory_hostname: '{{ inventory_hostname }}'
+
 # .. envvar:: govpn__network
 #
 # List of network which are created by the ``le9i0nx.govpn`` role.
