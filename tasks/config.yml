@@ -21,21 +21,43 @@
     govpn__key_client: "{{ govpn__key_raw.stdout_lines[1] }}"
   when: (govpn__start_client|d() and govpn__start_client | bool )
 
+- name: Create directories
+  file:
+    path:   '{{ item.path }}'
+    state:  '{{ item.state  | default("directory") }}'
+    owner:  '{{ item.owner  | default("root") }}'
+    group:  '{{ item.group  | default("root") }}'
+    mode:   '{{ item.mode   | default("0755") }}'
+  with_items:
+    - { path: '/etc/govpn/{{ govpn__network.name }}/conf.d/' }
+  when: (govpn__start_server|d() and govpn__start_server | bool )
+
 #2. настраиваем запуск на сервере
 - name: generate conf.d
   template:
     src: "etc/govpn/net/conf.d/client.yaml.j2"
-    dest: '/etc/govpn/{{ govpn__network.name }}/conf.d/peers.yaml'
+    dest: '/etc/govpn/{{ govpn__network.name }}/conf.d/{{ govpn__inventory_hostname }}.yaml'
     owner: 'root'
     group: 'root'
     mode: '0644'
   delegate_to: "{{ govpn__network.server }}"
   when: (govpn__start_client|d() and govpn__start_client | bool )
 
-#3. настраиваем клиентов
+- name: list dir
+  shell: find /etc/govpn/{{ govpn__network.name }}/conf.d/ -name "*.yaml"
+  register: govpn__register_dir_
+  changed_when: false
+  always_run: yes
+  when: (govpn__start_server|d() and govpn__start_server | bool )
 
-#- debug: msg={{ govpn__key_raw }}
-#- debug: msg={{ govpn__key_server }}
-#- debug: msg={{ govpn__key_client }}
+#2.2 объединяем конфиг
+#2.3 создаём службу
+#2.4 перезапускаем systemd
+#2.5 перезапускаем службу на сервере
+
+#3. настраиваем клиентов
+#3.1 создаём службу
+#3.2 перезапускаем systemd
+#3.3 перезапускаем службу на клиенте
 
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2
