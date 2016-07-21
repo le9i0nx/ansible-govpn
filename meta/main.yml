@@ -24,6 +24,16 @@ dependencies:
         - '{{ govpn__apt_preferences__dependent_list }}'
       when: govnp__dependencies_apt_preferences | bool
 
+    - role: debops.apt
+      tags:
+        - 'depend::apt'
+        - 'depend::apt:govpn'
+        - 'depend-of::govpn'
+        - 'type::dependency'
+      apt__host_repositories:
+        - '{{ govpn__repositories }}'
+      when: govnp__dependencies_apt | bool
+
 galaxy_info:
   author: 'Aleksej Gavrilov'
   description: 'Configure syncthing packages'

@@ -64,12 +64,22 @@ govpn__ferm_dependent_rules:
     name: 'udp'
     accept_any: True
 
-govnp__dependencies_apt_preferences: False
+govnp__dependencies_apt_preferences: '{{ (ansible_distribution_release == "jessie") | bool }}'
+
 govpn__apt_preferences__dependent_list:
 
   - package: 'golang*'
     by_role: 'le9i0nx.govpn'
     priority: '500'
     pin: 'release a=jessie-backports'
+
+govnp__dependencies_apt: '{{ (ansible_distribution_release == "jessie") | bool }}'
+
+govpn__repositories:
+
+  - repo: 'deb http://httpredir.debian.org/debian jessie-backports main contrib non-free'
+
+
+
 
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2
