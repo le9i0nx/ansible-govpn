@@ -18,6 +18,7 @@
   with_flattened:
     - 'git'
     - 'golang-go'
+    - 'make'
   when: govpn__version != govpn__version_install
 
 - name: git clone
