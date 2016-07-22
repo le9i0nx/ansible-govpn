@@ -11,7 +11,6 @@ virtualenv:
 
 env:
   - ANSIBLE_VER=v2.1.0.0-1
-  - ANSIBLE_VER=v2.1.1.0-0.3.rc3
 
 before_install:
   - env
