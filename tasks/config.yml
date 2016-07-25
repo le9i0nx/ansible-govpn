@@ -2,17 +2,22 @@
 
 - name: Generate /tmp/govpn_key
   shell: openssl rand -base64 48 > /tmp/govpn_key
+  changed_when: false
+  always_run: yes
   when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: Generate govpn key
   shell: govpn-verifier -key /tmp/govpn_key
   register: govpn__key_raw
+  changed_when: false
+  always_run: yes
   when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: rm /tmp/govpn_key
   file:
     path: /tmp/govpn_key
     state: absent
+  changed_when: false
   when: (govpn__start_client|d() and govpn__start_client | bool )
 
 - name: set govpn__key_(server|client)
