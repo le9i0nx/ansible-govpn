@@ -78,6 +78,7 @@ govnp__dependencies_apt: '{{ (ansible_distribution_release == "jessie") | bool }
 govpn__repositories:
 
   - repo: 'deb http://httpredir.debian.org/debian jessie-backports main contrib non-free'
+    mode: '0444'
 
 
 
