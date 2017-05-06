@@ -1,15 +1,5 @@
 ---
 
-- name: Check install version
-  shell: /usr/local/bin/govpn-server -version | awk '{ print $3 }'
-  register: govpn__version_install_raw
-  always_run: yes
-  changed_when: False
-
-- name: set govpn__version_install
-  set_fact:
-    govpn__version_install: "{{ govpn__version_install_raw.stdout }}"
-
 - name: install required packages
   apt:
     name: '{{ item }}'
@@ -18,25 +8,40 @@
   with_flattened:
     - 'git'
     - 'golang-go'
-  when: govpn__version != govpn__version_install
+    - 'make'
 
 - name: git clone
   git:
     repo: "{{ govpn__git }}"
-    dest: "/tmp/govpn"
-    version: "{{ govpn__version }}"
-  when: govpn__version != govpn__version_install
+    dest: "/srv/govpn"
+
+- name: Check install version
+  shell: /usr/local/bin/govpn-server -version | awk '{ print $3 }'
+  register: govpn__version_install_raw
+  check_mode: no
+  changed_when: False
+
+- name: Check git version
+  shell: cat /srv/govpn/VERSION | awk '{ print $0 }'
+  register: govpn__version_git_raw
+  check_mode: no
+  changed_when: False
+
+- name: set govpn__version_{git,install}
+  set_fact:
+    govpn__version_install: "{{ govpn__version_install_raw.stdout }}"
+    govpn__version_git: "{{ govpn__version_git_raw.stdout }}"
 
 - name: make all
   make:
-    chdir: /tmp/govpn
+    chdir: /srv/govpn
     target: all
-  when: govpn__version != govpn__version_install
+  when: govpn__version_git != govpn__version_install
 
 - name: Copy files
   copy:
     remote_src: True
-    src: "/tmp/govpn/{{ item }}"
+    src: "/srv/govpn/{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
     mode: 0755
     group: root
@@ -45,16 +50,16 @@
     - 'govpn-client'
     - 'govpn-server'
     - 'govpn-verifier'
-  when: govpn__version != govpn__version_install
+  when: govpn__version_git != govpn__version_install
 
 - name: Remove old files
   file:
-    path: "/tmp/govpn/{{item}}"
+    path: "/srv/govpn/{{item}}"
     state: absent
   with_flattened:
     - 'govpn-client'
     - 'govpn-server'
     - 'govpn-verifier'
-  when: govpn__version != govpn__version_install
+  when: govpn__version_git != govpn__version_install
 
 ## vim: foldmethod=marker:tabstop=2:shiftwidth=2:softtabstop=2
