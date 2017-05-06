@@ -4,10 +4,7 @@ govpn__start_client: True
 
 govpn__start_server: False
 
-govpn__version: "5.10"
-
-#govpn__git: "git://git.cypherpunks.ru/govpn.git"
-govpn__git: "https://github.com/stargrave/govpn.git"
+govpn__git: "git://git.cypherpunks.ru/govpn.git"
 
 # .. envvar:: govpn__host_address_ip
 #
@@ -43,7 +40,7 @@ govpn__ifupdown_interface:
 # Enable execution of ``le9i0nx.govpn`` role dependencies. This variable can be
 # used in playbooks to disable hardcoded dependencies during transition to
 # playbook-based ones.
-govnp__dependencies_ferm: False
+govnp__dependencies_ferm: True
 
 # .. envvar:: govpn__ferm_dependent_rules
 #
@@ -77,7 +74,7 @@ govnp__dependencies_apt: '{{ (ansible_distribution_release == "jessie") | bool }
 
 govpn__repositories:
 
-  - repo: 'deb http://httpredir.debian.org/debian jessie-backports main contrib non-free'
+  - repo: 'deb http://deb.debian.org/debian jessie-backports main contrib non-free'
     mode: '0444'
 
 
